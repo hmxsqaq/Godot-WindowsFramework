@@ -18,3 +18,6 @@ mono_crash.*.json
 
 # ide
 .idea/
+
+# personal
+release/
