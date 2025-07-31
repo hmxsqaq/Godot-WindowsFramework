@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://byyj1t1t2d4cs"]
 
 [ext_resource type="Script" uid="uid://o1p8v7uuod4a" path="res://scripts/Main.cs" id="1_ig7tw"]
-[ext_resource type="StyleBox" uid="uid://bs5ei4mq4146t" path="res://themes/bg.tres" id="2_0wfyh"]
+[ext_resource type="StyleBox" uid="uid://bs5ei4mq4146t" path="res://themes/main_bg.tres" id="2_0wfyh"]
 [ext_resource type="PackedScene" uid="uid://cl5dg7ejxuijc" path="res://scenes/GameWindow.tscn" id="2_sugp2"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_0wfyh"]

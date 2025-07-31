@@ -1,31 +1,30 @@
-[gd_scene load_steps=4 format=3 uid="uid://cl5dg7ejxuijc"]
+[gd_scene load_steps=10 format=3 uid="uid://cl5dg7ejxuijc"]
 
 [ext_resource type="Script" uid="uid://gs23mcxehnvt" path="res://scripts/GameWindow.cs" id="1_fm730"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_oq4jd"]
-content_margin_left = 50.0
-content_margin_top = 50.0
-content_margin_right = 50.0
-content_margin_bottom = 50.0
-bg_color = Color(0.176471, 0.176471, 0.176471, 1)
-border_width_left = 30
-border_width_top = 30
-border_width_right = 30
-border_width_bottom = 30
-border_color = Color(0.114897, 0.114897, 0.114897, 1)
-border_blend = true
-shadow_size = 20
+[ext_resource type="StyleBox" uid="uid://uh7r4eq7flxh" path="res://themes/window_bg.tres" id="2_bcnd4"]
+[ext_resource type="Texture2D" uid="uid://baiyrvoe0tph3" path="res://arts/arrows/arrow_basic_n.svg" id="2_oq4jd"]
+[ext_resource type="Script" uid="uid://cle4fa5w6dh3w" path="res://scripts/GameButton.cs" id="4_ilstw"]
+[ext_resource type="Texture2D" uid="uid://b2ny1ys6avolq" path="res://arts/arrows/arrow_basic_s.svg" id="5_anric"]
+[ext_resource type="Texture2D" uid="uid://ecmsor4as5hn" path="res://arts/arrows/arrow_basic_w.svg" id="6_0qxng"]
+[ext_resource type="Texture2D" uid="uid://bcvcavrbytl2c" path="res://arts/arrows/arrow_basic_e.svg" id="7_qnuhs"]
+[ext_resource type="Texture2D" uid="uid://b82gss8j1oda0" path="res://arts/button_round_border.svg" id="8_anric"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_bcnd4"]
-font_size = 30
+font_size = 20
 
-[node name="GameWindow" type="Window" node_paths=PackedStringArray("_idLabel", "_posLabel", "_sizeLabel")]
+[node name="GameWindow" type="Window" node_paths=PackedStringArray("_idLabel", "_posLabel", "_sizeLabel", "_topButton", "_bottomButton", "_leftButton", "_rightButton", "_moveButton")]
 size = Vector2i(500, 500)
+transient = true
 borderless = true
 script = ExtResource("1_fm730")
 _idLabel = NodePath("InfoPanelContainer/VBoxContainer/IdLabel")
 _posLabel = NodePath("InfoPanelContainer/VBoxContainer/PosLabel")
 _sizeLabel = NodePath("InfoPanelContainer/VBoxContainer/SizeLabel")
+_topButton = NodePath("Buttons/TopButton")
+_bottomButton = NodePath("Buttons/BottomButton")
+_leftButton = NodePath("Buttons/LeftButton")
+_rightButton = NodePath("Buttons/RightButton")
+_moveButton = NodePath("Buttons/MoveButton")
 
 [node name="InfoPanelContainer" type="PanelContainer" parent="."]
 anchors_preset = 15
@@ -35,13 +34,13 @@ offset_top = 1.0
 offset_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_oq4jd")
+theme_override_styles/panel = ExtResource("2_bcnd4")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="InfoPanelContainer"]
 layout_mode = 2
-size_flags_vertical = 4
+size_flags_horizontal = 0
+size_flags_vertical = 0
 theme_override_constants/separation = 20
-alignment = 1
 
 [node name="IdLabel" type="Label" parent="InfoPanelContainer/VBoxContainer"]
 layout_mode = 2
@@ -64,13 +63,107 @@ label_settings = SubResource("LabelSettings_bcnd4")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="OperationMarginContainer" type="MarginContainer" parent="."]
+[node name="Buttons" type="Control" parent="."]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Button" type="Button" parent="OperationMarginContainer"]
-layout_mode = 2
-text = "Top"
+[node name="TopButton" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = 10.0
+offset_right = 20.0
+offset_bottom = 50.0
+grow_horizontal = 2
+pivot_offset = Vector2(20, 20)
+focus_mode = 0
+mouse_default_cursor_shape = 9
+icon = ExtResource("2_oq4jd")
+flat = true
+icon_alignment = 1
+script = ExtResource("4_ilstw")
+
+[node name="BottomButton" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -50.0
+offset_right = 20.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(20, 20)
+focus_mode = 0
+mouse_default_cursor_shape = 9
+icon = ExtResource("5_anric")
+flat = true
+icon_alignment = 1
+script = ExtResource("4_ilstw")
+
+[node name="LeftButton" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 10.0
+offset_top = -20.0
+offset_right = 50.0
+offset_bottom = 20.0
+grow_vertical = 2
+pivot_offset = Vector2(20, 20)
+focus_mode = 0
+mouse_default_cursor_shape = 10
+icon = ExtResource("6_0qxng")
+flat = true
+icon_alignment = 1
+script = ExtResource("4_ilstw")
+
+[node name="RightButton" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -20.0
+offset_right = -10.0
+offset_bottom = 20.0
+grow_horizontal = 0
+grow_vertical = 2
+pivot_offset = Vector2(20, 20)
+focus_mode = 0
+mouse_default_cursor_shape = 10
+icon = ExtResource("7_qnuhs")
+flat = true
+icon_alignment = 1
+script = ExtResource("4_ilstw")
+
+[node name="MoveButton" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -36.0
+offset_top = -36.0
+offset_right = 36.0
+offset_bottom = 36.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+mouse_default_cursor_shape = 13
+icon = ExtResource("8_anric")
+flat = true
+script = ExtResource("4_ilstw")

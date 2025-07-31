@@ -23,6 +23,14 @@ window/subwindows/embed_subwindows=false
 
 project/assembly_name="windows_framework"
 
+[file_customization]
+
+folder_colors={
+"res://arts/": "yellow",
+"res://scenes/": "purple",
+"res://scripts/": "teal"
+}
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
