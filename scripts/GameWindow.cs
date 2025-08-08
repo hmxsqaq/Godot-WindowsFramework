@@ -13,12 +13,8 @@ public partial class GameWindow : Window
     [Export] private Dictionary<DisplayServer.WindowResizeEdge, Button> _resizeButtons = new();
     [Export] private Button _moveButton;
 
-    private bool _isOperating = false;
-    
     public override void _Ready()
     {
-        CloseRequested += QueueFree;
-
         foreach (var (edge, button) in _resizeButtons)
         {
             if (button == null)
@@ -36,11 +32,11 @@ public partial class GameWindow : Window
                 _ => Control.CursorShape.Arrow
             };
 
-            button.ButtonDown += () => GameWindowStartResize(edge);
+            button.ButtonDown += () => StartGameWindowResize(edge);
         }
 
         _moveButton.MouseDefaultCursorShape = Control.CursorShape.Move;
-        _moveButton.ButtonDown += GameWindowStartDrag;
+        _moveButton.ButtonDown += StartGameWindowDrag;
     }
 
     public override void _Process(double delta)
@@ -49,10 +45,8 @@ public partial class GameWindow : Window
         _posLabel.Text = $"Position: {GetPosition()}";
         _sizeLabel.Text = $"Size: {GetSize()}";
     }
-    
-    private void GameWindowStartResize(DisplayServer.WindowResizeEdge edge) => StartResize(edge);
 
-    private void GameWindowStartDrag() => StartDrag();
+    private void StartGameWindowResize(DisplayServer.WindowResizeEdge edge) => StartResize(edge);
 
-    private void StopOperating() => _isOperating = false;
+    private void StartGameWindowDrag() => StartDrag();
 }
