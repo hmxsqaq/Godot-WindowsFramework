@@ -8,7 +8,7 @@ public partial class WindowManager : Node
 {
     public static WindowManager Instance { get; private set; }
 
-    private readonly List<Window> _managedWindows = [];
+    private readonly List<GameWindow> _managedWindows = [];
 
     public override void _Ready() => Instance = this;
 
@@ -22,7 +22,7 @@ public partial class WindowManager : Node
             return;
         }
         
-        var newWindow = windowScene.Instantiate<Window>();
+        var newWindow = windowScene.Instantiate<GameWindow>();
         if (newWindow == null)
         {
             GD.PrintErr("[GameWindowManager]: Failed to instantiate GameWindow.");
@@ -30,6 +30,7 @@ public partial class WindowManager : Node
         }
         
         newWindow.FocusEntered += () => OnWindowFocused(newWindow);
+        newWindow.FocusExited += () => GD.Print($"[GameWindowManager]: Window {newWindow.GetWindowId()} lost focus.");
         newWindow.CloseRequested += () => OnWindowCloseRequested(newWindow);
         
         _managedWindows.Add(newWindow);
@@ -37,17 +38,17 @@ public partial class WindowManager : Node
         newWindow.Popup(rect);
     }
 
-    private void OnWindowFocused(Window window)
+    private void OnWindowFocused(GameWindow window)
     {
         if (!_managedWindows.Contains(window)) return;
 
         _managedWindows.Remove(window);
         _managedWindows.Add(window);
-        GD.Print($"[GameWindowManager]: Window {window.GetWindowId()} brought to front.");
+        GD.Print($"[GameWindowManager]: Window {window.GetWindowId()} get focused.");
         PrintWindowsOrder();
     }
     
-    private void OnWindowCloseRequested(Window window)
+    private void OnWindowCloseRequested(GameWindow window)
     {
         _managedWindows.Remove(window);
         window.QueueFree();
@@ -57,7 +58,7 @@ public partial class WindowManager : Node
 
     private void PrintWindowsOrder()
     {
-        string order = string.Join(" <- ", _managedWindows.Select(w => w.GetWindowId()));
+        var order = string.Join(" <- ", _managedWindows.Select(w => w.GetWindowId()));
         GD.Print($"[GameWindowManager]: Windows order: {order}");
     }
 }

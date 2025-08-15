@@ -12,7 +12,7 @@
 [sub_resource type="LabelSettings" id="LabelSettings_bcnd4"]
 font_size = 20
 
-[node name="GameWindow" type="Window" node_paths=PackedStringArray("_idLabel", "_posLabel", "_sizeLabel", "_resizeButtons", "_moveButton")]
+[node name="GameWindow" type="Window" node_paths=PackedStringArray("_idLabel", "_posLabel", "_sizeLabel", "_resizeButtons", "_moveButton", "_backgroundPanel")]
 size = Vector2i(500, 500)
 transient = true
 borderless = true
@@ -27,6 +27,7 @@ _resizeButtons = {
 6: NodePath("Buttons/BottomButton")
 }
 _moveButton = NodePath("Buttons/MoveButton")
+_backgroundPanel = NodePath("InfoPanelContainer")
 
 [node name="InfoPanelContainer" type="PanelContainer" parent="."]
 anchors_preset = 15

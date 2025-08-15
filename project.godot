@@ -32,7 +32,8 @@ project/assembly_name="windows_framework"
 folder_colors={
 "res://arts/": "yellow",
 "res://scenes/": "purple",
-"res://scripts/": "teal"
+"res://scripts/": "teal",
+"res://themes/": "blue"
 }
 
 [rendering]
