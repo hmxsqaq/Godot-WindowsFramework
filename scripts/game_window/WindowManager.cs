@@ -2,31 +2,31 @@
 using System.Linq;
 using Godot;
 
-namespace windows_framework.scripts;
+namespace windows_framework.scripts.game_window;
 
 public partial class WindowManager : Node
 {
     public static WindowManager Instance { get; private set; }
 
-    private readonly List<GameWindow> _managedWindows = [];
+    private readonly List<Window> _managedWindows = [];
 
     public override void _Ready() => Instance = this;
 
     public void LaunchNewWindow(PackedScene windowScene, Vector2I position, Vector2I size) => LaunchNewWindow(windowScene, new Rect2I(position, size));
 
-    public void LaunchNewWindow(PackedScene windowScene, Rect2I rect)
+    public int LaunchNewWindow(PackedScene windowScene, Rect2I rect)
     {
         if (windowScene == null)
         {
             GD.PrintErr("[GameWindowManager]: GameWindowScene is not set.");
-            return;
+            return -1;
         }
         
-        var newWindow = windowScene.Instantiate<GameWindow>();
+        var newWindow = windowScene.Instantiate<Window>();
         if (newWindow == null)
         {
             GD.PrintErr("[GameWindowManager]: Failed to instantiate GameWindow.");
-            return;
+            return -1;
         }
         
         newWindow.FocusEntered += () => OnWindowFocused(newWindow);
@@ -36,9 +36,10 @@ public partial class WindowManager : Node
         _managedWindows.Add(newWindow);
         GetTree().Root.AddChild(newWindow);
         newWindow.Popup(rect);
+        return newWindow.GetWindowId();
     }
 
-    private void OnWindowFocused(GameWindow window)
+    private void OnWindowFocused(Window window)
     {
         if (!_managedWindows.Contains(window)) return;
 
@@ -48,7 +49,7 @@ public partial class WindowManager : Node
         PrintWindowsOrder();
     }
     
-    private void OnWindowCloseRequested(GameWindow window)
+    private void OnWindowCloseRequested(Window window)
     {
         _managedWindows.Remove(window);
         window.QueueFree();

@@ -17,7 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-WindowManager="*res://scripts/WindowManager.cs"
+WindowManager="*res://scripts/game_window/WindowManager.cs"
 
 [display]
 
@@ -31,6 +31,7 @@ project/assembly_name="windows_framework"
 
 folder_colors={
 "res://arts/": "yellow",
+"res://resources/": "red",
 "res://scenes/": "purple",
 "res://scripts/": "teal",
 "res://themes/": "blue"

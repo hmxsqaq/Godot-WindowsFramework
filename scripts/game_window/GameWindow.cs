@@ -1,7 +1,7 @@
 using Godot;
 using Godot.Collections;
 
-namespace windows_framework.scripts;
+namespace windows_framework.scripts.game_window;
 
 public partial class GameWindow : Window
 {
@@ -53,7 +53,7 @@ public partial class GameWindow : Window
         _sizeLabel.Text = $"Size: {GetSize()}";
     }
     
-    public void SetBackgroundColor(Color color)
+    protected void SetBackgroundColor(Color color)
     {
         if (_backgroundPanelStyleBoxOverride == null && !CreateBackgroundStyleBoxOverride()) 
         {

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="WindowConfig" load_steps=2 format=3 uid="uid://bgddh7hs6kamo"]
+
+[ext_resource type="Script" uid="uid://bcs7ttq7mdb3" path="res://scripts/game_window/WindowConfig.cs" id="1_tagfa"]
+
+[resource]
+script = ExtResource("1_tagfa")
+Title = "New Window"
+MinSize = Vector2(100, 100)
+Movable = true
+Resizable = true
+Closeable = true
+Focusable = true
+metadata/_custom_type_script = "uid://bcs7ttq7mdb3"

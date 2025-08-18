@@ -18,7 +18,7 @@ public partial class Main : Control
 		{
 			var position = new Vector2I((int)_positionXSpinBox.Value, (int)_positionYSpinBox.Value);
 			var size = new Vector2I((int)_sizeXSpinBox.Value, (int)_sizeYSpinBox.Value);
-			WindowManager.Instance.LaunchNewWindow(_gameWindow, position, size);
+			game_window.WindowManager.Instance.LaunchNewWindow(_gameWindow, position, size);
 		};
 	}
 }
