@@ -5,9 +5,13 @@
 [resource]
 script = ExtResource("1_tagfa")
 Title = "New Window"
-MinSize = Vector2(100, 100)
-Movable = true
-Resizable = true
-Closeable = true
-Focusable = true
+Position = Vector2i(100, 100)
+MinSize = Vector2i(100, 100)
+Size = Vector2i(500, 500)
+Behaviors = Dictionary[int, bool]({
+0: true,
+1: true,
+2: false,
+3: true
+})
 metadata/_custom_type_script = "uid://bcs7ttq7mdb3"

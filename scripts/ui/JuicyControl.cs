@@ -10,6 +10,7 @@ public partial class JuicyControl : Node
     private Vector2 _originalScale;
     private Vector2 _targetScale;
     private Tween _tween;
+    private bool _mouseOver = false;
 
     private Control _target;
     
@@ -26,11 +27,29 @@ public partial class JuicyControl : Node
         
         _originalScale = _target.Scale;
         _targetScale = _originalScale * _scaleFactor;
-        
-        _target.MouseEntered += () => AnimateScale(_targetScale);
-        _target.MouseExited += () => AnimateScale(_originalScale);
+
+        _target.MouseEntered += () =>
+        {
+            AnimateScale(_targetScale);
+            _mouseOver = true;
+        };
+
+        _target.MouseExited += () =>
+        {
+            _mouseOver = false;
+            AnimateScale(_originalScale);
+        };
     }
-    
+
+    public override void _Input(InputEvent @event)
+    {
+        if (_mouseOver && @event is InputEventMouseMotion mouseEvent && mouseEvent.IsPressed())
+        {
+            _tween?.Kill();
+            _target.Scale = _originalScale;
+        }
+    }
+
     private void AnimateScale(Vector2 targetScale)
     {
         _tween?.Kill();

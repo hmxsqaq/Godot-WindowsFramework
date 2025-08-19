@@ -1,0 +1,49 @@
+[gd_scene load_steps=3 format=3 uid="uid://ri3r5so5brni"]
+
+[ext_resource type="Script" uid="uid://syxohmhq06xh" path="res://scripts/game_window/behaviors/WindowInfo.cs" id="2_hvjd0"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_bcnd4"]
+font_size = 20
+
+[node name="WindowInfo" type="MarginContainer" node_paths=PackedStringArray("_idLabel", "_posLabel", "_sizeLabel")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+script = ExtResource("2_hvjd0")
+_idLabel = NodePath("VBoxContainer/IdLabel")
+_posLabel = NodePath("VBoxContainer/PosLabel")
+_sizeLabel = NodePath("VBoxContainer/SizeLabel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/separation = 20
+
+[node name="IdLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "ID:"
+label_settings = SubResource("LabelSettings_bcnd4")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PosLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Pos: "
+label_settings = SubResource("LabelSettings_bcnd4")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SizeLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Size: "
+label_settings = SubResource("LabelSettings_bcnd4")
+horizontal_alignment = 1
+vertical_alignment = 1

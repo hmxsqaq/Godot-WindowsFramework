@@ -1,4 +1,6 @@
 using Godot;
+using Godot.Collections;
+using windows_framework.scripts.game_window.behaviors;
 
 namespace windows_framework.scripts.game_window;
 
@@ -6,12 +8,16 @@ namespace windows_framework.scripts.game_window;
 public partial class WindowConfig : Resource
 {
     [Export] public string Title { get; set; } = "New Window";
-    [Export] public Vector2 MinSize { get; set; } = new Vector2(100, 100);
-    
-    
+    [Export] public Vector2I Position { get; set; } = new(100, 100);
+    [Export] public Vector2I MinSize { get; set; } = new(100, 100);
+    [Export] public Vector2I Size { get; set;} = new(500, 500);
+
     [ExportGroup("Behavior")]
-    [Export] public bool Movable { get; set; } = true;
-    [Export] public bool Resizable { get; set; } = true;
-    [Export] public bool Closeable { get; set; } = true;
-    [Export] public bool Focusable { get; set; } = true;
+    [Export] public Dictionary<BehaviorType, bool> Behaviors { get; set; } = new()
+    {
+        { BehaviorType.Movable, true },
+        { BehaviorType.Resizable, true },
+        { BehaviorType.WindowInfo, false },
+        { BehaviorType.Passable, false }
+    };
 }

@@ -1,0 +1,36 @@
+[gd_scene load_steps=4 format=3 uid="uid://cvo3a1g3do75j"]
+
+[ext_resource type="Script" uid="uid://cdbkxnaummcjr" path="res://scripts/game_window/behaviors/Movable.cs" id="1_tjatg"]
+[ext_resource type="Texture2D" uid="uid://b82gss8j1oda0" path="res://arts/button_round_border.svg" id="2_3exuw"]
+[ext_resource type="Script" uid="uid://b83g5ms2x2b1" path="res://scripts/ui/JuicyControl.cs" id="3_ao2gx"]
+
+[node name="Movable" type="Control" node_paths=PackedStringArray("_moveButton")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_tjatg")
+_moveButton = NodePath("MoveButton")
+
+[node name="MoveButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -36.0
+offset_top = -36.0
+offset_right = 36.0
+offset_bottom = 36.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+icon = ExtResource("2_3exuw")
+flat = true
+
+[node name="JuicyControl" type="Node" parent="MoveButton"]
+script = ExtResource("3_ao2gx")

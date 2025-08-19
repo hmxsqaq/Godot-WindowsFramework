@@ -1,0 +1,106 @@
+[gd_scene load_steps=7 format=3 uid="uid://cssq32h8ej5rc"]
+
+[ext_resource type="Script" uid="uid://b4ly63t6gcoy2" path="res://scripts/game_window/behaviors/Resizable.cs" id="1_uy7uf"]
+[ext_resource type="Texture2D" uid="uid://baiyrvoe0tph3" path="res://arts/arrows/arrow_basic_n.svg" id="2_qxnq0"]
+[ext_resource type="Script" uid="uid://b83g5ms2x2b1" path="res://scripts/ui/JuicyControl.cs" id="3_aqccl"]
+[ext_resource type="Texture2D" uid="uid://b2ny1ys6avolq" path="res://arts/arrows/arrow_basic_s.svg" id="4_mantk"]
+[ext_resource type="Texture2D" uid="uid://ecmsor4as5hn" path="res://arts/arrows/arrow_basic_w.svg" id="5_07juy"]
+[ext_resource type="Texture2D" uid="uid://bcvcavrbytl2c" path="res://arts/arrows/arrow_basic_e.svg" id="6_bntfd"]
+
+[node name="Resizable" type="Control" node_paths=PackedStringArray("_resizeButtons")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_uy7uf")
+_resizeButtons = {
+1: NodePath("TopButton"),
+3: NodePath("LeftButton"),
+4: NodePath("RightButton"),
+6: NodePath("BottomButton")
+}
+
+[node name="TopButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = 10.0
+offset_right = 20.0
+offset_bottom = 50.0
+grow_horizontal = 2
+pivot_offset = Vector2(20, 20)
+focus_mode = 0
+icon = ExtResource("2_qxnq0")
+flat = true
+icon_alignment = 1
+
+[node name="JuicyControl" type="Node" parent="TopButton"]
+script = ExtResource("3_aqccl")
+
+[node name="BottomButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -50.0
+offset_right = 20.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+pivot_offset = Vector2(20, 20)
+focus_mode = 0
+icon = ExtResource("4_mantk")
+flat = true
+icon_alignment = 1
+
+[node name="JuicyControl" type="Node" parent="BottomButton"]
+script = ExtResource("3_aqccl")
+
+[node name="LeftButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 10.0
+offset_top = -20.0
+offset_right = 50.0
+offset_bottom = 20.0
+grow_vertical = 2
+pivot_offset = Vector2(20, 20)
+focus_mode = 0
+icon = ExtResource("5_07juy")
+flat = true
+icon_alignment = 1
+
+[node name="JuicyControl" type="Node" parent="LeftButton"]
+script = ExtResource("3_aqccl")
+
+[node name="RightButton" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -20.0
+offset_right = -10.0
+offset_bottom = 20.0
+grow_horizontal = 0
+grow_vertical = 2
+pivot_offset = Vector2(20, 20)
+focus_mode = 0
+icon = ExtResource("6_bntfd")
+flat = true
+icon_alignment = 1
+
+[node name="JuicyControl" type="Node" parent="RightButton"]
+script = ExtResource("3_aqccl")

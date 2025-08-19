@@ -1,11 +1,14 @@
 using Godot;
+using windows_framework.scripts.game_window;
 
 namespace windows_framework.scripts;
 
 public partial class Main : Control
 {
-	[Export] private PackedScene _gameWindow;
+	[Export] private WindowConfig _windowConfig;
+	
 	[Export] private Button _launchButton;
+	
 	[Export] private LineEdit _lineEdit;
 	[Export] private SpinBox _positionXSpinBox;
 	[Export] private SpinBox _positionYSpinBox;
@@ -16,9 +19,13 @@ public partial class Main : Control
 	{
 		_launchButton.Pressed += () =>
 		{
-			var position = new Vector2I((int)_positionXSpinBox.Value, (int)_positionYSpinBox.Value);
-			var size = new Vector2I((int)_sizeXSpinBox.Value, (int)_sizeYSpinBox.Value);
-			game_window.WindowManager.Instance.LaunchNewWindow(_gameWindow, position, size);
+			if (_windowConfig == null)
+			{
+				GD.PrintErr("[Main] WindowConfig is not assigned in the inspector.");
+				return;
+			}
+			
+			var window = WindowManager.Instance.CreateWindow(_windowConfig);
 		};
 	}
 }
