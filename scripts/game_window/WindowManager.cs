@@ -15,7 +15,8 @@ public partial class WindowManager : Node
     {
         { BehaviorType.Movable, GD.Load<PackedScene>("res://scenes/behaviors/movable.tscn") },
         { BehaviorType.Resizable, GD.Load<PackedScene>("res://scenes/behaviors/resizable.tscn") },
-        { BehaviorType.WindowInfo, GD.Load<PackedScene>("res://scenes/behaviors/window_info.tscn") }
+        { BehaviorType.WindowInfo, GD.Load<PackedScene>("res://scenes/behaviors/window_info.tscn") },
+        { BehaviorType.Passable, GD.Load<PackedScene>("res://scenes/behaviors/passable.tscn") }
     };
     
     private readonly List<BaseWindow> _managedWindows = [];
@@ -87,28 +88,87 @@ public partial class WindowManager : Node
         return newWindow;
     }
 
-    public void MoveWindow(BaseWindow targetWindow, Vector2I targetPosition)
+    public void SetWindowRect(BaseWindow window, Rect2I targetRect, DisplayServer.WindowResizeEdge? activeEdge = null)
     {
-        FlushUnpassableWindows();
-        
-        if (targetWindow == null)
+        if (window == null)
         {
             GD.PrintErr("[GameWindowManager]: Window is null.");
             return;
         }
-
+        
+        if (window.GetRect() == targetRect) return;
+        
+        FlushUnpassableWindows();
         if (_unpassableWindows.Count == 0)
         {
-            targetWindow.SetPosition(targetPosition);
+            window.SetPosition(targetRect.Position);
+            window.SetSize(targetRect.Size);
             return;
         }
 
-        var targetRect = targetWindow.GetRect();
-        if (_unpassableWindows
-            .Where(unpassableWindow => unpassableWindow != targetWindow)
-            .Any(unpassableWindow => targetRect.Intersects(unpassableWindow.GetRect())))
-            return;
-        targetWindow.SetPosition(targetPosition);
+        foreach (var unpassableWindow in _unpassableWindows)
+        {
+            if (unpassableWindow == window) continue;
+            
+            var unpassableRect = unpassableWindow.GetRect();
+            if (!targetRect.Intersects(unpassableRect)) continue;
+
+            if (activeEdge.HasValue)
+            {
+                // Handle resizing
+                switch (activeEdge.Value)
+                {
+                    case DisplayServer.WindowResizeEdge.Top:
+                        var newY = unpassableRect.End.Y;
+                        targetRect.Size -= new Vector2I(0, newY - targetRect.Position.Y);
+                        targetRect.Position = new Vector2I(targetRect.Position.X, newY);
+                        break;
+                    case DisplayServer.WindowResizeEdge.Left: 
+                        var newX = unpassableRect.End.X;
+                        targetRect.Size -= new Vector2I(newX - targetRect.Position.X, 0);
+                        targetRect.Position = new Vector2I(newX, targetRect.Position.Y);
+                        break;
+                    case DisplayServer.WindowResizeEdge.Right:
+                        targetRect.Size = new Vector2I(unpassableRect.Position.X - targetRect.Position.X, targetRect.Size.Y);
+                        break;
+                    case DisplayServer.WindowResizeEdge.Bottom:
+                        targetRect.Size = new Vector2I(targetRect.Size.X, unpassableRect.Position.Y - targetRect.Position.Y);
+                        break;
+                    case DisplayServer.WindowResizeEdge.TopLeft:
+                    case DisplayServer.WindowResizeEdge.TopRight:
+                    case DisplayServer.WindowResizeEdge.BottomLeft:
+                    case DisplayServer.WindowResizeEdge.BottomRight:
+                    case DisplayServer.WindowResizeEdge.Max:
+                    default:
+                        GD.PrintErr($"[GameWindowManager]: Unsupported resize edge: {activeEdge.Value}");
+                        break;
+                }
+            }
+            else
+            {
+                // MTV calculation
+                var intersection = targetRect.Intersection(unpassableRect);
+                var offset = Vector2I.Zero;
+                var targetCenter = targetRect.GetCenter();
+                var unpassableCenter = unpassableRect.GetCenter();
+                if (intersection.Size.X < intersection.Size.Y)
+                {
+                    offset.X = targetCenter.X < unpassableCenter.X 
+                        ? -intersection.Size.X 
+                        : intersection.Size.X;
+                }
+                else
+                {
+                    offset.Y = targetCenter.Y < unpassableCenter.Y 
+                        ? -intersection.Size.Y 
+                        : intersection.Size.Y;
+                }
+                targetRect.Position += offset;
+            }
+        }
+        
+        window.SetPosition(targetRect.Position);
+        window.SetSize(targetRect.Size);
     }
     
     private void FlushUnpassableWindows()

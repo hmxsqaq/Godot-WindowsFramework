@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b8xpjmilykrkm"]
+
+[ext_resource type="Script" uid="uid://bsamrxbq21qlk" path="res://scripts/game_window/behaviors/Passable.cs" id="1_kkjkx"]
+
+[node name="Passable" type="Node"]
+script = ExtResource("1_kkjkx")

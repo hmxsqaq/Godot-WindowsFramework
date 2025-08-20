@@ -17,7 +17,7 @@ public partial class WindowConfig : Resource
     {
         { BehaviorType.Movable, true },
         { BehaviorType.Resizable, true },
-        { BehaviorType.WindowInfo, false },
-        { BehaviorType.Passable, false }
+        { BehaviorType.Passable, true },
+        { BehaviorType.WindowInfo, false }
     };
 }

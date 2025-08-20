@@ -1,31 +1,36 @@
 using Godot;
 using windows_framework.scripts.game_window;
+using windows_framework.scripts.game_window.behaviors;
 
 namespace windows_framework.scripts;
 
 public partial class Main : Control
 {
-	[Export] private WindowConfig _windowConfig;
-	
 	[Export] private Button _launchButton;
 	
-	[Export] private LineEdit _lineEdit;
+	[Export] private LineEdit _titleLineEdit;
 	[Export] private SpinBox _positionXSpinBox;
 	[Export] private SpinBox _positionYSpinBox;
 	[Export] private SpinBox _sizeXSpinBox;
 	[Export] private SpinBox _sizeYSpinBox;
+	[Export] private CheckBox _passableCheckBox;
 
 	public override void _Ready()
 	{
 		_launchButton.Pressed += () =>
 		{
-			if (_windowConfig == null)
+			var windowConfig = new WindowConfig()
 			{
-				GD.PrintErr("[Main] WindowConfig is not assigned in the inspector.");
-				return;
-			}
+				Title = _titleLineEdit.Text,
+				Position = new Vector2I((int)_positionXSpinBox.Value, (int)_positionYSpinBox.Value),
+				Size = new Vector2I((int)_sizeXSpinBox.Value, (int)_sizeYSpinBox.Value)
+			};
+			windowConfig.Behaviors[BehaviorType.Movable] = true;
+			windowConfig.Behaviors[BehaviorType.Resizable] = true;
+			windowConfig.Behaviors[BehaviorType.WindowInfo] = true;
+			windowConfig.Behaviors[BehaviorType.Passable] = _passableCheckBox.ButtonPressed;
 			
-			var window = WindowManager.Instance.CreateWindow(_windowConfig);
+			var window = WindowManager.Instance.CreateWindow(windowConfig);
 		};
 	}
 }

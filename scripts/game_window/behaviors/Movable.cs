@@ -5,6 +5,7 @@ namespace windows_framework.scripts.game_window.behaviors;
 public partial class Movable : Behavior
 {
     [Export] private Button _moveButton;
+    [Export] private float _moveSpeed = 10;
     
     private bool _isDragging = false;
     
@@ -36,8 +37,10 @@ public partial class Movable : Behavior
             GD.PrintErr($"[Movable: {Name}] Movable is not initialized.");
             return;
         }
-        
-        if (_isDragging) 
-            GameWindow.MoveTo(DisplayServer.MouseGetPosition() - _offset);
+
+        if (!_isDragging) return;
+        var targetPosition = DisplayServer.MouseGetPosition() - _offset;
+        targetPosition = (Vector2I)(GameWindow.Position + (Vector2)(targetPosition - GameWindow.Position) * _moveSpeed * (float)delta);
+        GameWindow.MoveTo(targetPosition);
     }
 }

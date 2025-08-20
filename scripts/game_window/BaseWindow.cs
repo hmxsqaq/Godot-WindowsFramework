@@ -26,14 +26,13 @@ public partial class BaseWindow : Window
     }
     
     public Rect2I GetRect() => new(Position, Size);
-    
-    public void MoveTo(Vector2I position) => WindowManager.Instance.MoveWindow(this, position);
 
-    public void ResizeTo(Vector2I size)
-    {
-        SetSize(size);
-    }
-    
+    public void MoveTo(Vector2I position) => 
+        WindowManager.Instance.SetWindowRect(this, new Rect2I(position, Size));
+
+    public void ResizeTo(Rect2I rect, DisplayServer.WindowResizeEdge activeEdge) => 
+        WindowManager.Instance.SetWindowRect(this, rect, activeEdge);
+
     public void AddBehavior(BehaviorType type, Behavior behavior)
     {
         if (Behaviors.ContainsKey(type))
