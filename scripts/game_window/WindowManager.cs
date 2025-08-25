@@ -7,22 +7,9 @@ namespace windows_framework.scripts.game_window;
 
 public partial class WindowManager : Node
 {
-    public static WindowManager Instance { get; private set; }
+    #region Singleton
 
-    private readonly PackedScene _baseWindowScene = GD.Load<PackedScene>("res://scenes/game_window.tscn");
-    
-    private readonly Dictionary<BehaviorType, PackedScene> _behaviorScenes = new()
-    {
-        { BehaviorType.Movable, GD.Load<PackedScene>("res://scenes/behaviors/movable.tscn") },
-        { BehaviorType.Resizable, GD.Load<PackedScene>("res://scenes/behaviors/resizable.tscn") },
-        { BehaviorType.WindowInfo, GD.Load<PackedScene>("res://scenes/behaviors/window_info.tscn") },
-        { BehaviorType.Passable, GD.Load<PackedScene>("res://scenes/behaviors/passable.tscn") }
-    };
-    
-    private readonly List<BaseWindow> _managedWindows = [];
-    private List<BaseWindow> _unpassableWindows = [];
-    
-    private bool _isUnpassableWindowsDirty = false;
+    public static WindowManager Instance { get; private set; }
 
     public override void _EnterTree()
     {
@@ -34,6 +21,23 @@ public partial class WindowManager : Node
         }
         Instance = this;
     }
+
+    #endregion
+
+    private readonly PackedScene _baseWindowScene = GD.Load<PackedScene>("res://scenes/game_window.tscn");
+
+    private readonly Dictionary<BehaviorType, PackedScene> _behaviorScenes = new()
+    {
+        { BehaviorType.Movable, GD.Load<PackedScene>("res://scenes/behaviors/movable.tscn") },
+        { BehaviorType.Resizable, GD.Load<PackedScene>("res://scenes/behaviors/resizable.tscn") },
+        { BehaviorType.WindowInfo, GD.Load<PackedScene>("res://scenes/behaviors/window_info.tscn") },
+        { BehaviorType.Passable, GD.Load<PackedScene>("res://scenes/behaviors/passable.tscn") }
+    };
+
+    private readonly List<BaseWindow> _managedWindows = [];
+    private List<BaseWindow> _unpassableWindows = [];
+
+    private bool _isUnpassableWindowsDirty = false;
 
     public BaseWindow CreateWindow(WindowConfig windowConfig)
     {

@@ -7,8 +7,8 @@ namespace windows_framework.scripts.game_window;
 public partial class BaseWindow : Window
 {
     [Export] private Panel _backgroundPanel;
-    [Export] private Color _focusedColor = new(0.2f, 0.2f, 0.2f);
-    [Export] private Color _unfocusedColor = new(0.3f, 0.3f, 0.3f);
+    [Export] private Color _focusedColor = new(0.3f, 0.3f, 0.3f);
+    [Export] private Color _unfocusedColor = new(0.2f, 0.2f, 0.2f);
 
     private Dictionary<BehaviorType, Behavior> Behaviors { get; } = new();
     
@@ -20,8 +20,8 @@ public partial class BaseWindow : Window
         }
         else
         {
-            _backgroundPanel.FocusEntered += () => _backgroundPanel.Modulate = _focusedColor;
-            _backgroundPanel.FocusExited += () => _backgroundPanel.Modulate = _unfocusedColor;
+            FocusEntered += () => _backgroundPanel.Modulate = _focusedColor;
+            FocusExited += () => _backgroundPanel.Modulate = _unfocusedColor;
         }
     }
     
