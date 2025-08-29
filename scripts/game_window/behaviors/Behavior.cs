@@ -7,6 +7,7 @@ public enum BehaviorType
     Movable,
     Resizable,
     Passable,
+    UnBlockable,
     WindowInfo
 }
 

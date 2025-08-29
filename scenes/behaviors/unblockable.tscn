@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cmdff8t53cacq"]
+
+[ext_resource type="Script" uid="uid://dw70n8peep413" path="res://scripts/game_window/behaviors/UnBlockable.cs" id="1_q046f"]
+
+[node name="UnBlockable" type="Node"]
+script = ExtResource("1_q046f")

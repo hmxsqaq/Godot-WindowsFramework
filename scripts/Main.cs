@@ -14,6 +14,7 @@ public partial class Main : Control
 	[Export] private SpinBox _sizeXSpinBox;
 	[Export] private SpinBox _sizeYSpinBox;
 	[Export] private CheckBox _passableCheckBox;
+	[Export] private CheckBox _unblockableCheckBox;
 
 	public override void _Ready()
 	{
@@ -29,6 +30,7 @@ public partial class Main : Control
 			windowConfig.Behaviors[BehaviorType.Resizable] = true;
 			windowConfig.Behaviors[BehaviorType.WindowInfo] = true;
 			windowConfig.Behaviors[BehaviorType.Passable] = _passableCheckBox.ButtonPressed;
+			windowConfig.Behaviors[BehaviorType.UnBlockable] = _unblockableCheckBox.ButtonPressed;
 			
 			var window = WindowManager.Instance.CreateWindow(windowConfig);
 		};

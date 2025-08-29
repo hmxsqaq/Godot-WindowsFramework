@@ -6,7 +6,7 @@
 [sub_resource type="LabelSettings" id="LabelSettings_0wfyh"]
 font_size = 70
 
-[node name="main" type="Control" node_paths=PackedStringArray("_launchButton", "_titleLineEdit", "_positionXSpinBox", "_positionYSpinBox", "_sizeXSpinBox", "_sizeYSpinBox", "_passableCheckBox")]
+[node name="main" type="Control" node_paths=PackedStringArray("_launchButton", "_titleLineEdit", "_positionXSpinBox", "_positionYSpinBox", "_sizeXSpinBox", "_sizeYSpinBox", "_passableCheckBox", "_unblockableCheckBox")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -21,6 +21,7 @@ _positionYSpinBox = NodePath("PanelContainer/VBoxContainer/HBoxContainer/VBoxCon
 _sizeXSpinBox = NodePath("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/SizeInputField/Width")
 _sizeYSpinBox = NodePath("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/SizeInputField/Height")
 _passableCheckBox = NodePath("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/BehaviorConfigField/PassableCheckBox")
+_unblockableCheckBox = NodePath("PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/BehaviorConfigField/UnBlockableCheckBox")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -141,6 +142,14 @@ theme_override_font_sizes/font_size = 30
 text = "Passable"
 
 [node name="PassableCheckBox" type="CheckBox" parent="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/BehaviorConfigField"]
+layout_mode = 2
+
+[node name="UnBlockableLabel" type="Label" parent="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/BehaviorConfigField"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "UnBlockable"
+
+[node name="UnBlockableCheckBox" type="CheckBox" parent="PanelContainer/VBoxContainer/HBoxContainer/VBoxContainer/BehaviorConfigField"]
 layout_mode = 2
 
 [node name="Button_Launch" type="Button" parent="PanelContainer/VBoxContainer/HBoxContainer"]

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using Godot;
 using windows_framework.scripts.game_window.behaviors;
@@ -24,6 +25,8 @@ public partial class WindowManager : Node
 
     #endregion
 
+    #region Recourses
+    
     private readonly PackedScene _baseWindowScene = GD.Load<PackedScene>("res://scenes/game_window.tscn");
 
     private readonly Dictionary<BehaviorType, PackedScene> _behaviorScenes = new()
@@ -31,13 +34,15 @@ public partial class WindowManager : Node
         { BehaviorType.Movable, GD.Load<PackedScene>("res://scenes/behaviors/movable.tscn") },
         { BehaviorType.Resizable, GD.Load<PackedScene>("res://scenes/behaviors/resizable.tscn") },
         { BehaviorType.WindowInfo, GD.Load<PackedScene>("res://scenes/behaviors/window_info.tscn") },
-        { BehaviorType.Passable, GD.Load<PackedScene>("res://scenes/behaviors/passable.tscn") }
+        { BehaviorType.Passable, GD.Load<PackedScene>("res://scenes/behaviors/passable.tscn") },
+        { BehaviorType.UnBlockable, GD.Load<PackedScene>("res://scenes/behaviors/unblockable.tscn") }
     };
-
+    
+    #endregion
+    
     private readonly List<BaseWindow> _managedWindows = [];
-    private List<BaseWindow> _unpassableWindows = [];
 
-    private bool _isUnpassableWindowsDirty = false;
+    private bool _isWindowListDirty = true;
 
     public BaseWindow CreateWindow(WindowConfig windowConfig)
     {
@@ -87,36 +92,52 @@ public partial class WindowManager : Node
         GetTree().Root.AddChild(newWindow);
         newWindow.Popup(new Rect2I(windowConfig.Position, windowConfig.Size));
         _managedWindows.Add(newWindow);
-        _isUnpassableWindowsDirty = true;
+        _isWindowListDirty = true;
         
         return newWindow;
     }
 
-    public void SetWindowRect(BaseWindow window, Rect2I targetRect, DisplayServer.WindowResizeEdge? activeEdge = null)
+    public void SetWindowRect(BaseWindow targetWindow, Rect2I targetRect, DisplayServer.WindowResizeEdge? activeEdge = null)
     {
-        if (window == null)
+        if (targetWindow == null)
         {
             GD.PrintErr("[GameWindowManager]: Window is null.");
             return;
         }
         
-        if (window.GetRect() == targetRect) return;
+        if (targetWindow.GetRect() == targetRect) return;
         
-        FlushUnpassableWindows();
-        if (_unpassableWindows.Count == 0)
+        if (targetWindow.HasBehavior(BehaviorType.UnBlockable))
         {
-            window.SetPosition(targetRect.Position);
-            window.SetSize(targetRect.Size);
+            targetWindow.SetPosition(targetRect.Position);
+            targetWindow.SetSize(targetRect.Size);
             return;
         }
 
-        foreach (var unpassableWindow in _unpassableWindows)
+        List<Rect2I> unpassableRects = [];
+        foreach (var window in _managedWindows.Where(window => window != targetWindow))
         {
-            if (unpassableWindow == window) continue;
-            
-            var unpassableRect = unpassableWindow.GetRect();
-            if (!targetRect.Intersects(unpassableRect)) continue;
+            if (window.HasBehavior(BehaviorType.UnBlockable))
+            {
+                GD.Print("[GameWindowManager]: Found unpassable window, subtracting its rects.");
+                foreach (var unpassableRect in unpassableRects.ToList())
+                {
+                    GD.Print($"[GameWindowManager]: Subtracting rect: - Pos: {unpassableRect.Position}, Size: {unpassableRect.Size}");
+                    var subtractedRects = SubtractRect(unpassableRect, window.GetRect());
+                    unpassableRects.Remove(unpassableRect);
+                    unpassableRects.AddRange(subtractedRects);
+                }
+                continue;
+            }
+            if (window.HasBehavior(BehaviorType.Passable)) continue;
+            unpassableRects.Add(window.GetRect());
+        }
 
+        var debugMsg = unpassableRects.Aggregate("[GameWindowManager]: Unpassable rects:\n", (current, rect) => current + $"- Pos: {rect.Position}, Size: {rect.Size}\n");
+        GD.Print(debugMsg);
+        
+        foreach (var unpassableRect in unpassableRects.Where(unpassableRect => targetRect.Intersects(unpassableRect)))
+        {
             if (activeEdge.HasValue)
             {
                 // Handle resizing
@@ -171,20 +192,56 @@ public partial class WindowManager : Node
             }
         }
         
-        window.SetPosition(targetRect.Position);
-        window.SetSize(targetRect.Size);
+        targetWindow.SetPosition(targetRect.Position);
+        targetWindow.SetSize(targetRect.Size);
     }
-    
-    private void FlushUnpassableWindows()
+
+    private List<Rect2I> SubtractRect(Rect2I original, Rect2I subtract)
     {
-        if (!_isUnpassableWindowsDirty) return;
-        
-        _unpassableWindows = _managedWindows
-            .Where(w => !w.HasBehavior(BehaviorType.Passable))
-            .ToList();
-        
-        _isUnpassableWindowsDirty = false;
-        GD.Print($"[GameWindowManager]: Unpassable windows flushed. Count: {_unpassableWindows.Count}");
+        List<Rect2I> result = [];
+        if (!original.Intersects(subtract))
+        {
+            result.Add(original);
+            return result;
+        }
+        var intersection = original.Intersection(subtract);
+        // top
+        if (original.Position.Y < intersection.Position.Y)
+        {
+            Rect2I topRect = new(
+                original.Position,
+                new Vector2I(original.Size.X, intersection.Position.Y - original.Position.Y)
+            );
+            result.Add(topRect);
+        }
+        // bottom
+        if (original.End.Y > intersection.End.Y)
+        {
+            Rect2I bottomRect = new(
+                new Vector2I(original.Position.X, intersection.End.Y),
+                new Vector2I(original.Size.X, original.End.Y - intersection.End.Y)
+            );
+            result.Add(bottomRect);
+        }
+        // left
+        if (original.Position.X < intersection.Position.X)
+        {
+            Rect2I leftRect = new(
+                new Vector2I(original.Position.X, intersection.Position.Y),
+                new Vector2I(intersection.Position.X - original.Position.X, intersection.Size.Y)
+            );
+            result.Add(leftRect);
+        }
+        // right
+        if (original.End.X > intersection.End.X)
+        {
+            Rect2I rightRect = new(
+                new Vector2I(intersection.End.X, intersection.Position.Y),
+                new Vector2I(original.End.X - intersection.End.X, intersection.Size.Y)
+            );
+            result.Add(rightRect);
+        }
+        return result;
     }
     
     private void OnWindowFocused(BaseWindow window)
@@ -201,7 +258,7 @@ public partial class WindowManager : Node
     {
         _managedWindows.Remove(window);
         window.QueueFree();
-        _isUnpassableWindowsDirty = true;
+        _isWindowListDirty = true;
         GD.Print($"[GameWindowManager]: Window {window.GetWindowId()} closed. Remaining: {_managedWindows.Count}");
         PrintWindowsOrder();
     }
