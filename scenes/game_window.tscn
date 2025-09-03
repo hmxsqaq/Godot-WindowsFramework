@@ -4,6 +4,12 @@
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2blu7"]
 bg_color = Color(1, 1, 1, 1)
+border_width_left = 15
+border_width_top = 15
+border_width_right = 15
+border_width_bottom = 15
+border_color = Color(0.190762, 0.190762, 0.190762, 1)
+border_blend = true
 
 [node name="GameWindow" type="Window" node_paths=PackedStringArray("_backgroundPanel")]
 disable_3d = true
