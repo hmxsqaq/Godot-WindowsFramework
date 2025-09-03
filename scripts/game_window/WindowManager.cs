@@ -115,21 +115,20 @@ public partial class WindowManager : Node
         }
 
         List<Rect2I> unpassableRects = [];
+        var isTargetWindowPassable = targetWindow.HasBehavior(BehaviorType.Passable);
         foreach (var window in _managedWindows.Where(window => window != targetWindow))
         {
             if (window.HasBehavior(BehaviorType.UnBlockable))
             {
-                GD.Print("[GameWindowManager]: Found unpassable window, subtracting its rects.");
                 foreach (var unpassableRect in unpassableRects.ToList())
                 {
-                    GD.Print($"[GameWindowManager]: Subtracting rect: - Pos: {unpassableRect.Position}, Size: {unpassableRect.Size}");
                     var subtractedRects = SubtractRect(unpassableRect, window.GetRect());
                     unpassableRects.Remove(unpassableRect);
                     unpassableRects.AddRange(subtractedRects);
                 }
                 continue;
             }
-            if (window.HasBehavior(BehaviorType.Passable)) continue;
+            if (isTargetWindowPassable && window.HasBehavior(BehaviorType.Passable)) continue;
             unpassableRects.Add(window.GetRect());
         }
 
@@ -196,7 +195,7 @@ public partial class WindowManager : Node
         targetWindow.SetSize(targetRect.Size);
     }
 
-    private List<Rect2I> SubtractRect(Rect2I original, Rect2I subtract)
+    private static List<Rect2I> SubtractRect(Rect2I original, Rect2I subtract)
     {
         List<Rect2I> result = [];
         if (!original.Intersects(subtract))
