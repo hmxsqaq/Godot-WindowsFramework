@@ -1,0 +1,22 @@
+[gd_scene load_steps=2 format=3 uid="uid://4qe7eyjloa8t"]
+
+[ext_resource type="Script" uid="uid://ckdlnsp652vgo" path="res://scripts/game_window/behaviors/Walkable.cs" id="1_4ejun"]
+
+[node name="Walkable" type="Control" node_paths=PackedStringArray("_player")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_4ejun")
+_player = NodePath("ColorRect")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_top = -1.0
+offset_right = 40.0
+offset_bottom = 39.0
+mouse_filter = 2
+color = Color(0.497438, 0.767786, 0.274685, 1)

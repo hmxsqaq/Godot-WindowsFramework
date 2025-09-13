@@ -1,6 +1,7 @@
 using Godot;
 using windows_framework.scripts.game_window;
 using windows_framework.scripts.game_window.behaviors;
+using windows_framework.scripts.player;
 
 namespace windows_framework.scripts;
 
@@ -31,8 +32,10 @@ public partial class Main : Control
 			windowConfig.Behaviors[BehaviorType.WindowInfo] = true;
 			windowConfig.Behaviors[BehaviorType.Passable] = _passableCheckBox.ButtonPressed;
 			windowConfig.Behaviors[BehaviorType.UnBlockable] = _unblockableCheckBox.ButtonPressed;
+			windowConfig.Behaviors[BehaviorType.Walkable] = true;
 			
 			var window = WindowManager.Instance.CreateWindow(windowConfig);
+			PlayerManager.Instance.SetParent(window, new Vector2(50, 50));
 		};
 	}
 }

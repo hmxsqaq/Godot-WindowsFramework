@@ -10,6 +10,11 @@ public partial class BaseWindow : Window
     [Export] private Color _focusedColor = new(0.3f, 0.3f, 0.3f);
     [Export] private Color _unfocusedColor = new(0.2f, 0.2f, 0.2f);
 
+    [Signal] public delegate void WindowResizedEventHandler(Rect2I newRect, DisplayServer.WindowResizeEdge activeEdge);
+    [Signal] public delegate void WindowMovedEventHandler(Vector2I newPosition);
+
+    public WindowConfig Config { get; set; } // the config used to create this window
+
     private Dictionary<BehaviorType, Behavior> Behaviors { get; } = new();
     
     public override void _Ready()
@@ -27,11 +32,17 @@ public partial class BaseWindow : Window
     
     public Rect2I GetRect() => new(Position, Size);
 
-    public void MoveTo(Vector2I position) => 
+    public void MoveTo(Vector2I position)
+    {
         WindowManager.Instance.SetWindowRect(this, new Rect2I(position, Size));
+        EmitSignalWindowMoved(position);
+    }
 
-    public void ResizeTo(Rect2I rect, DisplayServer.WindowResizeEdge activeEdge) => 
+    public void ResizeTo(Rect2I rect, DisplayServer.WindowResizeEdge activeEdge)
+    {
         WindowManager.Instance.SetWindowRect(this, rect, activeEdge);
+        EmitSignalWindowResized(rect, activeEdge);
+    }
 
     public void AddBehavior(BehaviorType type, Behavior behavior)
     {

@@ -1,4 +1,4 @@
-﻿namespace windows_framework.scripts.game_window.behaviors;
+namespace windows_framework.scripts.game_window.behaviors;
 
 public partial class Passable : Behavior
 {

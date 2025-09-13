@@ -2,6 +2,7 @@
 using System.Linq;
 using Godot;
 using windows_framework.scripts.game_window.behaviors;
+using windows_framework.scripts.player;
 using windows_framework.scripts.utility;
 
 namespace windows_framework.scripts.game_window;
@@ -35,14 +36,13 @@ public partial class WindowManager : Node
         { BehaviorType.Resizable, GD.Load<PackedScene>("res://scenes/behaviors/resizable.tscn") },
         { BehaviorType.WindowInfo, GD.Load<PackedScene>("res://scenes/behaviors/window_info.tscn") },
         { BehaviorType.Passable, GD.Load<PackedScene>("res://scenes/behaviors/passable.tscn") },
-        { BehaviorType.UnBlockable, GD.Load<PackedScene>("res://scenes/behaviors/unblockable.tscn") }
+        { BehaviorType.UnBlockable, GD.Load<PackedScene>("res://scenes/behaviors/unblockable.tscn") },
+        { BehaviorType.Walkable, GD.Load<PackedScene>("res://scenes/behaviors/walkable.tscn") },
     };
     
     #endregion
-    
-    private readonly List<BaseWindow> _managedWindows = [];
 
-    private bool _isWindowListDirty = true;
+    public List<BaseWindow> ManagedWindows { get; } = [];
 
     public BaseWindow CreateWindow(WindowConfig windowConfig)
     {
@@ -64,7 +64,11 @@ public partial class WindowManager : Node
             GD.PrintErr("[GameWindowManager]: Failed to instantiate BaseWindow.");
             return null;
         }
-        
+
+        newWindow.Config = windowConfig;
+        newWindow.SetTitle(windowConfig.Title);
+        newWindow.SetMinSize(windowConfig.MinSize);
+
         newWindow.FocusEntered += () => OnWindowFocused(newWindow);
         newWindow.FocusExited += () => GD.Print($"[GameWindowManager]: Window {newWindow.GetWindowId()} lost focus.");
         newWindow.CloseRequested += () => OnWindowCloseRequested(newWindow);
@@ -86,13 +90,10 @@ public partial class WindowManager : Node
             newWindow.AddBehavior(behavior.Key, behaviorInstance);
         }
         
-        newWindow.SetTitle(windowConfig.Title);
-        newWindow.SetMinSize(windowConfig.MinSize);
-        
         GetTree().Root.AddChild(newWindow);
-        newWindow.Popup(new Rect2I(windowConfig.Position, windowConfig.Size));
-        _managedWindows.Add(newWindow);
-        _isWindowListDirty = true;
+        Vector2I screenPosition = DisplayServer.ScreenGetPosition();
+        newWindow.Popup(new Rect2I(windowConfig.Position + screenPosition, windowConfig.Size));
+        ManagedWindows.Add(newWindow);
         
         return newWindow;
     }
@@ -116,15 +117,15 @@ public partial class WindowManager : Node
 
         List<Rect2I> unpassableRects = [];
         var isTargetWindowPassable = targetWindow.HasBehavior(BehaviorType.Passable);
-        foreach (var window in _managedWindows.Where(window => window != targetWindow))
+        foreach (var window in ManagedWindows.Where(window => window != targetWindow))
         {
             if (window.HasBehavior(BehaviorType.UnBlockable))
             {
                 foreach (var unpassableRect in unpassableRects.ToList())
                 {
-                    var subtractedRects = unpassableRect.Subtract(window.GetRect());
+                    var remainingRects = unpassableRect.Subtract(window.GetRect());
                     unpassableRects.Remove(unpassableRect);
-                    unpassableRects.AddRange(subtractedRects);
+                    unpassableRects.AddRange(remainingRects);
                 }
                 continue;
             }
@@ -132,8 +133,7 @@ public partial class WindowManager : Node
             unpassableRects.Add(window.GetRect());
         }
 
-        var debugMsg = unpassableRects.Aggregate("[GameWindowManager]: Unpassable rects:\n", (current, rect) => current + $"- Pos: {rect.Position}, Size: {rect.Size}\n");
-        GD.Print(debugMsg);
+        GD.Print(unpassableRects.Aggregate("[GameWindowManager]: Unpassable rects:\n", (current, rect) => current + $"- Pos: {rect.Position}, Size: {rect.Size}\n"));
         
         foreach (var unpassableRect in unpassableRects.Where(unpassableRect => targetRect.Intersects(unpassableRect)))
         {
@@ -197,26 +197,25 @@ public partial class WindowManager : Node
     
     private void OnWindowFocused(BaseWindow window)
     {
-        if (!_managedWindows.Contains(window)) return;
+        if (!ManagedWindows.Contains(window)) return;
 
-        _managedWindows.Remove(window);
-        _managedWindows.Add(window);
+        ManagedWindows.Remove(window);
+        ManagedWindows.Add(window);
         GD.Print($"[GameWindowManager]: Window {window.GetWindowId()} get focused.");
         PrintWindowsOrder();
     }
     
     private void OnWindowCloseRequested(BaseWindow window)
     {
-        _managedWindows.Remove(window);
+        ManagedWindows.Remove(window);
         window.QueueFree();
-        _isWindowListDirty = true;
-        GD.Print($"[GameWindowManager]: Window {window.GetWindowId()} closed. Remaining: {_managedWindows.Count}");
+        GD.Print($"[GameWindowManager]: Window {window.GetWindowId()} closed. Remaining: {ManagedWindows.Count}");
         PrintWindowsOrder();
     }
     
     private void PrintWindowsOrder()
     {
-        var order = string.Join(" <- ", _managedWindows.Select(w => w.GetWindowId()));
+        var order = string.Join(" <- ", ManagedWindows.Select(w => w.GetWindowId()));
         GD.Print($"[GameWindowManager]: Windows order: {order}");
     }
 }

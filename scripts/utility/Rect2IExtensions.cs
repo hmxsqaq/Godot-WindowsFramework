@@ -20,12 +20,9 @@ public static class Rect2IExtensions
     
     public static List<Rect2I> Subtract(this Rect2I original, Rect2I subtract)
     {
+        if (!original.Intersects(subtract)) return [original];
+
         List<Rect2I> result = [];
-        if (!original.Intersects(subtract))
-        {
-            result.Add(original);
-            return result;
-        }
         var intersection = original.Intersection(subtract);
         // top
         if (original.Position.Y < intersection.Position.Y)
@@ -65,5 +62,4 @@ public static class Rect2IExtensions
         }
         return result;
     }
-
 }
