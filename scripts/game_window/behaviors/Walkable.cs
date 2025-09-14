@@ -20,7 +20,7 @@ public partial class Walkable : Behavior
 
     public override void _Process(double delta)
     {
-        var playerGlobalRect = PlayerManager.Instance.CurrentPlayerRect;
+        var playerGlobalRect = PlayerManager.Instance.PlayerRect;
         var windowRect = GameWindow.GetRect();
         var isPlayerInside = windowRect.Intersects((Rect2I)playerGlobalRect);
         if (isPlayerInside)

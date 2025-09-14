@@ -26,12 +26,28 @@ public partial class PlayerManager : Node
 
 	#endregion
 
-	public Rect2 CurrentPlayerRect => new(_playerPosition, _playerSize);
+	public Rect2 PlayerRect => new(_playerPosition, _playerSize);
 
 	private BaseWindow _parentWindow;
 	private Vector2 _playerPosition;
 	private Vector2 _playerSize;
-	private int _playerSpeed = 20;
+	private int _playerSpeed = 200;
+
+	public override void _Process(double delta)
+	{
+		Vector2 inputDirection = Vector2.Zero;
+		if (Input.IsActionPressed("player_right")) inputDirection.X = 1;
+		if (Input.IsActionPressed("player_left")) inputDirection.X = -1;
+		if (Input.IsActionPressed("player_down")) inputDirection.Y = 1;
+		if (Input.IsActionPressed("player_up")) inputDirection.Y = -1;
+		if (inputDirection != Vector2.Zero)
+		{
+			inputDirection = inputDirection.Normalized();
+			var movement = inputDirection * _playerSpeed * (float)delta;
+			var newPosition = _playerPosition + movement;
+			MoveTo(newPosition);
+		}
+	}
 
 	public void SetParent(BaseWindow parentWindow, Vector2 startSize)
 	{
@@ -47,23 +63,6 @@ public partial class PlayerManager : Node
 		_parentWindow.WindowResized += OnParentWindowResized;
 	}
 
-	public override void _Process(double delta)
-	{
-		Vector2 inputDirection = Vector2.Zero;
-		if (Input.IsActionPressed("player_right")) inputDirection.X = 1;
-		if (Input.IsActionPressed("player_left")) inputDirection.X = -1;
-		if (Input.IsActionPressed("player_down")) inputDirection.Y = 1;
-		if (Input.IsActionPressed("player_up")) inputDirection.Y = -1;
-		if (inputDirection != Vector2.Zero)
-		{
-			inputDirection = inputDirection.Normalized();
-			var movement = inputDirection * _playerSpeed * (float)delta;
-			var newPosition = _playerPosition + movement;
-
-			_playerPosition = newPosition; // temp
-		}
-	}
-
 	private void OnParentWindowMoved(Vector2I newPosition)
 	{
 
@@ -74,7 +73,35 @@ public partial class PlayerManager : Node
 
 	}
 
-	private List<Rect2I> GetUnwalkableAreas()
+	private void MoveTo(Vector2 newPosition)
+	{
+		var unwalkableRects = GetUnwalkableRects();
+		foreach (var unwalkableRect in unwalkableRects
+			         .Where(unwalkableRect => PlayerRect.Intersects(unwalkableRect)))
+		{
+			// collided
+			var intersection = PlayerRect.Intersection(unwalkableRect);
+			var offset = Vector2.Zero;
+			var playerCenter = PlayerRect.GetCenter();
+			var unwalkableCenter = unwalkableRect.GetCenter();
+			if (intersection.Size.X < intersection.Size.Y)
+			{
+				offset.X = playerCenter.X < unwalkableCenter.X
+					? -intersection.Size.X
+					: intersection.Size.X;
+			}
+			else
+			{
+				offset.Y = playerCenter.Y < unwalkableCenter.Y
+					? -intersection.Size.Y
+					: intersection.Size.Y;
+			}
+			newPosition += offset;
+		}
+		_playerPosition = newPosition;
+	}
+
+	private List<Rect2I> GetUnwalkableRects()
 	{
 		List<Rect2I> walkableRects = [];
 		foreach (var window in WindowManager.Instance.ManagedWindows)
@@ -93,7 +120,7 @@ public partial class PlayerManager : Node
 			}
 		}
 
-		var screenRect = new Rect2I(Vector2I.Zero, DisplayServer.ScreenGetSize());
+		var screenRect = new Rect2I(DisplayServer.ScreenGetPosition(), DisplayServer.ScreenGetSize());
 		return screenRect.Subtract(walkableRects);
 	}
 }

@@ -17,6 +17,8 @@ public partial class Main : Control
 	[Export] private CheckBox _passableCheckBox;
 	[Export] private CheckBox _unblockableCheckBox;
 
+	private bool _isFirstWindow = true;
+
 	public override void _Ready()
 	{
 		_launchButton.Pressed += () =>
@@ -35,6 +37,9 @@ public partial class Main : Control
 			windowConfig.Behaviors[BehaviorType.Walkable] = true;
 			
 			var window = WindowManager.Instance.CreateWindow(windowConfig);
+
+			if (!_isFirstWindow) return;
+			_isFirstWindow = false;
 			PlayerManager.Instance.SetParent(window, new Vector2(50, 50));
 		};
 	}

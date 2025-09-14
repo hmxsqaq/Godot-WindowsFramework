@@ -133,9 +133,10 @@ public partial class WindowManager : Node
             unpassableRects.Add(window.GetRect());
         }
 
-        GD.Print(unpassableRects.Aggregate("[GameWindowManager]: Unpassable rects:\n", (current, rect) => current + $"- Pos: {rect.Position}, Size: {rect.Size}\n"));
+        // GD.Print(unpassableRects.Aggregate("[GameWindowManager]: Unpassable rects:\n", (current, rect) => current + $"- Pos: {rect.Position}, Size: {rect.Size}\n"));
         
-        foreach (var unpassableRect in unpassableRects.Where(unpassableRect => targetRect.Intersects(unpassableRect)))
+        foreach (var unpassableRect in unpassableRects
+                     .Where(unpassableRect => targetRect.Intersects(unpassableRect)))
         {
             if (activeEdge.HasValue)
             {
