@@ -1,7 +1,6 @@
 using Godot;
 using windows_framework.scripts.game_window;
-using windows_framework.scripts.game_window.behaviors;
-using windows_framework.scripts.player;
+using windows_framework.scripts.game;
 
 namespace windows_framework.scripts;
 

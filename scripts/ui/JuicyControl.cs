@@ -4,9 +4,14 @@ namespace windows_framework.scripts.ui;
 
 public partial class JuicyControl : Node
 {
+    [ExportGroup("Scale")]
     [Export] private float _scaleFactor = 1.1f;
     [Export] private double _animationDuration = 0.2;
-    
+
+    [ExportGroup("Color")]
+    [Export] private Color _hoverColor = Colors.White;
+    [Export] private Color _unhoverColor = new(1, 1, 1, 0.5f);
+
     private Vector2 _originalScale;
     private Vector2 _targetScale;
     private Tween _tween;
@@ -27,17 +32,20 @@ public partial class JuicyControl : Node
         
         _originalScale = _target.Scale;
         _targetScale = _originalScale * _scaleFactor;
+        _target.Modulate = _unhoverColor;
 
         _target.MouseEntered += () =>
         {
-            AnimateScale(_targetScale);
             _mouseOver = true;
+            AnimateScale(_targetScale);
+            _target.Modulate = _hoverColor;
         };
 
         _target.MouseExited += () =>
         {
             _mouseOver = false;
             AnimateScale(_originalScale);
+            _target.Modulate = _unhoverColor;
         };
     }
 

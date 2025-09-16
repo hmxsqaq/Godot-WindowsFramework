@@ -25,7 +25,7 @@ public partial class WindowManager : Node
 
     #endregion
 
-    #region Recourses
+    #region Resources
     
     private readonly PackedScene _baseWindowScene = GD.Load<PackedScene>("res://scenes/game_window.tscn");
 
@@ -67,6 +67,8 @@ public partial class WindowManager : Node
         newWindow.Config = windowConfig;
         newWindow.SetTitle(windowConfig.Title);
         newWindow.SetMinSize(windowConfig.MinSize);
+        newWindow.IsPlayerFollowingMovement = windowConfig.PlayerCanFollowMovement;
+        newWindow.IsPlayerFollowingResizing = windowConfig.PlayerCanFollowResizing;
 
         newWindow.FocusEntered += () => OnWindowFocused(newWindow);
         newWindow.FocusExited += () => GD.Print($"[GameWindowManager]: Window {newWindow.GetWindowId()} lost focus.");

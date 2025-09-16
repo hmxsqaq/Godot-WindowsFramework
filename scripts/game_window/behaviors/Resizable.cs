@@ -1,4 +1,3 @@
-using System;
 using Godot;
 using Godot.Collections;
 
@@ -11,6 +10,7 @@ public partial class Resizable : Behavior
     private bool _isResizing = false;
     private DisplayServer.WindowResizeEdge _currentEdge;
     private Vector2I _mousePosition;
+    private Rect2I _dragStartRect;
 
     protected override bool OnInitialize(BaseWindow window)
     {
@@ -36,6 +36,7 @@ public partial class Resizable : Behavior
                 _isResizing = true;
                 _currentEdge = edge;
                 _mousePosition = DisplayServer.MouseGetPosition();
+                _dragStartRect = GameWindow.GetRect();
             };
             
             button.ButtonUp += () => _isResizing = false;
@@ -53,8 +54,8 @@ public partial class Resizable : Behavior
 
         if (!_isResizing) return;
         var mouseDelta = DisplayServer.MouseGetPosition() - _mousePosition;
-        var newSize = GameWindow.Size;
-        var newPosition = GameWindow.Position;
+        var newSize = _dragStartRect.Size;
+        var newPosition = _dragStartRect.Position;
         switch (_currentEdge)
         {
             case DisplayServer.WindowResizeEdge.Top:
@@ -81,6 +82,5 @@ public partial class Resizable : Behavior
                 return;
         }
         GameWindow.ResizeTo(new Rect2I(newPosition, newSize), _currentEdge);
-        _mousePosition = DisplayServer.MouseGetPosition();
     }
 }

@@ -13,6 +13,8 @@ public partial class BaseWindow : Window
     [Signal] public delegate void WindowMovedEventHandler(Rect2I windowRectBeforeMoved);
 
     public WindowConfig Config { get; set; } // the config used to create this window
+    public bool IsPlayerFollowingMovement { get; set; }
+    public bool IsPlayerFollowingResizing { get; set; }
 
     private Dictionary<BehaviorType, Behavior> Behaviors { get; } = new();
     

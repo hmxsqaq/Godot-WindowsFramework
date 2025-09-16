@@ -4,7 +4,7 @@ using Godot;
 using windows_framework.scripts.game_window;
 using windows_framework.scripts.utility;
 
-namespace windows_framework.scripts.player;
+namespace windows_framework.scripts.game;
 
 public partial class PlayerManager : Node
 {
@@ -71,14 +71,14 @@ public partial class PlayerManager : Node
 
 	private void OnParentWindowMoved(Rect2I windowRectBeforeMoved)
 	{
-		if (!ParentWindow.Config.PlayerCanFollowMovement) return;
+		if (!ParentWindow.IsPlayerFollowingMovement) return;
 		var parentPosDelta = ParentWindow.GetRect().Position - windowRectBeforeMoved.Position;
 		MoveTo(_playerPosition + parentPosDelta);
 	}
 
 	private void OnParentWindowResized(Rect2I windowRectBeforeResized)
 	{
-		if (!ParentWindow.Config.PlayerCanFollowResizing) return;
+		if (!ParentWindow.IsPlayerFollowingResizing) return;
 
 		var parentOriginalSize = windowRectBeforeResized.Size;
 		var parentNewSize = ParentWindow.GetRect().Size;
