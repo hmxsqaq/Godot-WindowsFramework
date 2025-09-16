@@ -2,16 +2,6 @@ using Godot;
 
 namespace windows_framework.scripts.game_window.behaviors;
 
-public enum BehaviorType
-{
-    Movable,
-    Resizable,
-    Passable,
-    UnBlockable,
-    Walkable,
-    WindowInfo
-}
-
 public abstract partial class Behavior : Node
 {
     protected BaseWindow GameWindow;

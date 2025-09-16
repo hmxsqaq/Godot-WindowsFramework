@@ -15,11 +15,19 @@ public partial class Walkable : Behavior
             return false;
         }
         _player.Visible = false;
+
+        GameWindow.FocusEntered += () =>
+        {
+            if (GameWindow.GetRect().Intersects((Rect2I)PlayerManager.Instance.PlayerRect))
+                PlayerManager.Instance.SetParent(GameWindow);
+        };
+
         return true;
     }
 
     public override void _Process(double delta)
     {
+        // player renderer
         var playerGlobalRect = PlayerManager.Instance.PlayerRect;
         var windowRect = GameWindow.GetRect();
         var isPlayerInside = windowRect.Intersects((Rect2I)playerGlobalRect);
@@ -29,5 +37,12 @@ public partial class Walkable : Behavior
             _player.Size = playerGlobalRect.Size;
         }
         _player.Visible = isPlayerInside;
+
+        // parent check
+        if (!GameWindow.HasFocus()) return;
+        if (!isPlayerInside && PlayerManager.Instance.ParentWindow == GameWindow)
+            PlayerManager.Instance.SetParent(null);
+        if (Input.IsActionJustReleased("mouse_left_button") && isPlayerInside && PlayerManager.Instance.ParentWindow != GameWindow)
+            PlayerManager.Instance.SetParent(GameWindow);
     }
 }

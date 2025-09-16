@@ -2,7 +2,6 @@
 using System.Linq;
 using Godot;
 using windows_framework.scripts.game_window.behaviors;
-using windows_framework.scripts.player;
 using windows_framework.scripts.utility;
 
 namespace windows_framework.scripts.game_window;
@@ -98,7 +97,8 @@ public partial class WindowManager : Node
         return newWindow;
     }
 
-    public void SetWindowRect(BaseWindow targetWindow, Rect2I targetRect, DisplayServer.WindowResizeEdge? activeEdge = null)
+    public void SetWindowRect(BaseWindow targetWindow, Rect2I targetRect,
+        DisplayServer.WindowResizeEdge? activeEdge = null)
     {
         if (targetWindow == null)
         {
@@ -107,7 +107,7 @@ public partial class WindowManager : Node
         }
         
         if (targetWindow.GetRect() == targetRect) return;
-        
+
         if (targetWindow.HasBehavior(BehaviorType.UnBlockable))
         {
             targetWindow.SetPosition(targetRect.Position);
@@ -191,7 +191,7 @@ public partial class WindowManager : Node
                 targetRect.Position += offset;
             }
         }
-        
+
         targetWindow.SetPosition(targetRect.Position);
         targetWindow.SetSize(targetRect.Size);
     }

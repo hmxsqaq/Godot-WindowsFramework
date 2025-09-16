@@ -1,17 +1,16 @@
 using System.Collections.Generic;
 using Godot;
 using windows_framework.scripts.game_window.behaviors;
+using windows_framework.scripts.ui;
 
 namespace windows_framework.scripts.game_window;
 
 public partial class BaseWindow : Window
 {
-    [Export] private Panel _backgroundPanel;
-    [Export] private Color _focusedColor = new(0.3f, 0.3f, 0.3f);
-    [Export] private Color _unfocusedColor = new(0.2f, 0.2f, 0.2f);
+    [Export] private BgStyleSetter _bgStyle;
 
-    [Signal] public delegate void WindowResizedEventHandler(Rect2I newRect, DisplayServer.WindowResizeEdge activeEdge);
-    [Signal] public delegate void WindowMovedEventHandler(Vector2I newPosition);
+    [Signal] public delegate void WindowResizedEventHandler(Rect2I windowRectBeforeResized);
+    [Signal] public delegate void WindowMovedEventHandler(Rect2I windowRectBeforeMoved);
 
     public WindowConfig Config { get; set; } // the config used to create this window
 
@@ -19,14 +18,12 @@ public partial class BaseWindow : Window
     
     public override void _Ready()
     {
-        if (_backgroundPanel == null)
-        {
-            GD.PrintErr($"[BaseWindow: {Name}] Background panel is not assigned in the inspector.");
-        }
+        if (_bgStyle == null)
+            GD.PrintErr($"[BaseWindow: {Name}] BgStyle is not assigned in the inspector.");
         else
         {
-            FocusEntered += () => _backgroundPanel.Modulate = _focusedColor;
-            FocusExited += () => _backgroundPanel.Modulate = _unfocusedColor;
+            FocusEntered += () => _bgStyle.SetBorderColor(new Color(1f, 1f, 1f));
+            FocusExited += () => _bgStyle.SetBorderColor(new Color(0.3f, 0.3f, 0.3f));
         }
     }
     
@@ -34,14 +31,16 @@ public partial class BaseWindow : Window
 
     public void MoveTo(Vector2I position)
     {
+        Rect2I originalRect = GetRect();
         WindowManager.Instance.SetWindowRect(this, new Rect2I(position, Size));
-        EmitSignalWindowMoved(position);
+        EmitSignalWindowMoved(originalRect);
     }
 
     public void ResizeTo(Rect2I rect, DisplayServer.WindowResizeEdge activeEdge)
     {
+        Rect2I originalRect = GetRect();
         WindowManager.Instance.SetWindowRect(this, rect, activeEdge);
-        EmitSignalWindowResized(rect, activeEdge);
+        EmitSignalWindowResized(originalRect);
     }
 
     public void AddBehavior(BehaviorType type, Behavior behavior)

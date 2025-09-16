@@ -2,7 +2,6 @@
 using System.Linq;
 using Godot;
 using windows_framework.scripts.game_window;
-using windows_framework.scripts.game_window.behaviors;
 using windows_framework.scripts.utility;
 
 namespace windows_framework.scripts.player;
@@ -26,9 +25,9 @@ public partial class PlayerManager : Node
 
 	#endregion
 
+	public BaseWindow ParentWindow { get; private set; }
 	public Rect2 PlayerRect => new(_playerPosition, _playerSize);
 
-	private BaseWindow _parentWindow;
 	private Vector2 _playerPosition;
 	private Vector2 _playerSize;
 	private int _playerSpeed = 200;
@@ -49,28 +48,50 @@ public partial class PlayerManager : Node
 		}
 	}
 
-	public void SetParent(BaseWindow parentWindow, Vector2 startSize)
+	public void ResetPlayer(BaseWindow parent, Vector2 newSize)
 	{
-		if (_parentWindow != null)
+		_playerPosition = parent.GetRect().GetCenter() - newSize / 2;
+		_playerSize = newSize;
+		SetParent(parent);
+	}
+
+	public void SetParent(BaseWindow newParent)
+	{
+		if (newParent == ParentWindow) return;
+		if (ParentWindow != null)
 		{
-			_parentWindow.WindowMoved -= OnParentWindowMoved;
-			_parentWindow.WindowResized -= OnParentWindowResized;
+			ParentWindow.WindowMoved -= OnParentWindowMoved;
+			ParentWindow.WindowResized -= OnParentWindowResized;
 		}
-		_playerPosition = parentWindow.GetRect().GetCenter() - startSize / 2;
-		_playerSize = startSize;
-		_parentWindow = parentWindow;
-		_parentWindow.WindowMoved += OnParentWindowMoved;
-		_parentWindow.WindowResized += OnParentWindowResized;
+		ParentWindow = newParent;
+		if (newParent == null) return;
+		ParentWindow.WindowMoved += OnParentWindowMoved;
+		ParentWindow.WindowResized += OnParentWindowResized;
 	}
 
-	private void OnParentWindowMoved(Vector2I newPosition)
+	private void OnParentWindowMoved(Rect2I windowRectBeforeMoved)
 	{
-
+		if (!ParentWindow.Config.PlayerCanFollowMovement) return;
+		var parentPosDelta = ParentWindow.GetRect().Position - windowRectBeforeMoved.Position;
+		MoveTo(_playerPosition + parentPosDelta);
 	}
 
-	private void OnParentWindowResized(Rect2I newRect, DisplayServer.WindowResizeEdge activeEdge)
+	private void OnParentWindowResized(Rect2I windowRectBeforeResized)
 	{
+		if (!ParentWindow.Config.PlayerCanFollowResizing) return;
 
+		var parentOriginalSize = windowRectBeforeResized.Size;
+		var parentNewSize = ParentWindow.GetRect().Size;
+		var parentSizeScale = new Vector2(
+			(float)parentNewSize.X / parentOriginalSize.X,
+			(float)parentNewSize.Y / parentOriginalSize.Y);
+
+		var originalParentCenter = windowRectBeforeResized.GetCenter();
+		var newParentCenter = ParentWindow.GetRect().GetCenter();
+		var toPlayer = PlayerRect.GetCenter() - originalParentCenter;
+		toPlayer = new Vector2(toPlayer.X * parentSizeScale.X, toPlayer.Y * parentSizeScale.Y);
+		_playerSize = new Vector2(_playerSize.X * parentSizeScale.X, _playerSize.Y * parentSizeScale.Y);
+		MoveTo(newParentCenter + toPlayer - _playerSize / 2);
 	}
 
 	private void MoveTo(Vector2 newPosition)

@@ -27,7 +27,9 @@ public partial class Main : Control
 			{
 				Title = _titleLineEdit.Text,
 				Position = new Vector2I((int)_positionXSpinBox.Value, (int)_positionYSpinBox.Value),
-				Size = new Vector2I((int)_sizeXSpinBox.Value, (int)_sizeYSpinBox.Value)
+				Size = new Vector2I((int)_sizeXSpinBox.Value, (int)_sizeYSpinBox.Value),
+				PlayerCanFollowMovement = true,
+				PlayerCanFollowResizing = true
 			};
 			windowConfig.Behaviors[BehaviorType.Movable] = true;
 			windowConfig.Behaviors[BehaviorType.Resizable] = true;
@@ -40,7 +42,7 @@ public partial class Main : Control
 
 			if (!_isFirstWindow) return;
 			_isFirstWindow = false;
-			PlayerManager.Instance.SetParent(window, new Vector2(50, 50));
+			PlayerManager.Instance.ResetPlayer(window, new Vector2(50, 50));
 		};
 	}
 }
